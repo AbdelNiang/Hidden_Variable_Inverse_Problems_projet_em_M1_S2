@@ -1,59 +1,67 @@
 ---
-title: "EM for Inverse Problems with Latent Variables"
-author: "Niokhobaye Abdel"
+title: "Hidden-Variable Inverse Problems"
+author: "Niokhobaye Abdel and Arthur Conche"
 format: gfm
 execute:
-    echo: true
-    warning: false
+  echo: false
+  warning: false
 ---
 
-# Overview
+# Hidden-Variable Inverse Problems
 
-Ce projet implémente un algorithme EM pour des problèmes inverses avec variable latente.
+A compact EM implementation for inverse problems with discrete latent transformations,
+with a focus on reproducible numerical experiments in inverse problems and optimization.
 
-Modèle considéré :
+## Problem setting
+
+For observations
 
 $$
-Y = A_Z \theta + \varepsilon
+Y_i = A_{Z_i}\theta + \varepsilon_i,
 $$
 
-Fonctionnalités :
+we estimate the shared signal $\theta$ while treating each latent transformation
+$Z_i$ as unobserved. The E-step computes posterior weights; the M-step either solves
+a weighted least-squares problem or performs an Armijo-checked gradient update.
 
-* Implémentation modulaire de EM
----
-title: "Inverse Problems with Latent Variables"
-author: "Niokhobaye Abdel"
-format: gfm
----
+## Implemented models
 
-# Objectif
+- Circular translations of 1D signals.
+- A simplified 2D rotation/projection model for numerical experiments.
+- Optional quadratic regularization.
 
-Ce projet estime un signal partagé $\theta$ à partir d'observations
-$Y_i = A_{Z_i}\theta + \varepsilon_i$, où la transformation $Z_i$ est latente.
-L'algorithme EM calcule les probabilités a posteriori des transformations,
-puis met à jour le signal avec les mêmes poids pendant toute la M-step.
+The 2D prototype is intentionally small and controlled: it checks the adjoint
+operator by an inner-product test and keeps the numerical setting explicit and
+reproducible.
 
-## Modèles implémentés
+## Scientific scope
 
-- Translations circulaires de signaux 1D.
-- Rotations bilinéaires d'images 2D suivies d'une projection trapézoïdale.
-- M-step explicite ou optimisation généralisée avec recherche Armijo.
-- Régularisation quadratique optionnelle.
+This repository is a research prototype rather than a full cryo-EM reconstruction
+engine. The 2D example is a simplified discretized model that is useful for studying
+latent-variable EM, adjoint consistency, and regularized optimization behavior.
 
-Pour le modèle 2D, l'adjoint est la transposée discrète exacte de l'opérateur
-utilisé, y compris l'interpolation, la projection et le masque.
+## Setup and validation
 
-## Installation et vérification
+Python 3.11 or 3.12 is supported.
 
 ```bash
 python -m pip install -e ".[test]"
 MPLBACKEND=Agg python -m pytest -q
 ```
 
-Lancer `python demo.py` pour les exemples interactifs. Les graines aléatoires
-sont locales aux démos et au générateur de données.
+A non-interactive reproduction is available with:
 
-## Rapport
+```bash
+MPLBACKEND=Agg python demo.py
+```
 
-Le rapport et les diapositives sont dans `rapport/`.
-$$
+The data generator and demo initialization use local seeded random generators and do
+not reset NumPy's global random state.
+
+## Report
+
+The report and slides are in `rapport/`, including `doc-2-1.pdf`.
+
+## Attribution
+
+This project was carried out jointly with Arthur Conche.

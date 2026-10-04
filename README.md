@@ -1,25 +1,37 @@
 # Hidden-Variable Inverse Problems
 
-An EM implementation for inverse problems with discrete latent transformations,
-developed by Niokhobaye Abdel and Arthur Conche at Universite Paris Cite.
+A compact EM implementation for inverse problems with discrete latent transformations,
+with a focus on reproducible numerical experiments in inverse problems and optimization.
 
-## Model
+## Problem setting
 
-For observations $Y_i = A_{Z_i}\theta + \varepsilon_i$, the code estimates
-the shared signal $\theta$ while treating each transformation $Z_i$ as latent.
-The E-step computes posterior weights; the M-step either solves weighted normal
-equations or takes an Armijo-checked gradient step.
+For observations
 
-Implemented examples:
+$$
+Y_i = A_{Z_i}\theta + \varepsilon_i,
+$$
 
-- Circular translations of one-dimensional signals.
-- Two-dimensional rotations followed by numerical projection.
+we estimate the shared signal $\theta$ while treating each latent transformation
+$Z_i$ as unobserved. The E-step computes posterior weights; the M-step either solves
+a weighted least-squares problem or performs an Armijo-checked gradient update.
+
+## Implemented models
+
+- Circular translations of 1D signals.
+- A simplified 2D rotation/projection model for numerical experiments.
 - Optional quadratic regularization.
 
-The 2D model uses the transpose of its discrete bilinear interpolation and
-projection operators, so its adjoint can be checked by an inner-product test.
+The 2D prototype is intentionally small and controlled: it checks the adjoint
+operator by an inner-product test and keeps the numerical setting explicit and
+reproducible.
 
-## Setup
+## Scientific scope
+
+This repository is a research prototype rather than a full cryo-EM reconstruction
+engine. The 2D example is a simplified discretized model that is useful for studying
+latent-variable EM, adjoint consistency, and regularized optimization behavior.
+
+## Setup and validation
 
 Python 3.11 or 3.12 is supported.
 
@@ -28,16 +40,20 @@ python -m pip install -e ".[test]"
 MPLBACKEND=Agg python -m pytest -q
 ```
 
-Run `python demo.py` for the interactive examples. The data generator and demo
-initializations use local seeded random generators and do not reset NumPy's
-global random state.
+A non-interactive reproduction is available with:
+
+```bash
+MPLBACKEND=Agg python demo.py
+```
+
+The data generator and demo initialization use local seeded random generators and do
+not reset NumPy's global random state.
 
 ## Report
 
-The mathematical report and slides are in [`rapport/`](rapport/), including
+The report and slides are in [`rapport/`](rapport/), including
 [`doc-2-1.pdf`](rapport/doc-2-1.pdf).
 
-## Acknowledgements
+## Attribution
 
-This project was carried out jointly with Arthur Conche. The software was
-developed in collaboration with him.
+This project was carried out jointly with Arthur Conche.
