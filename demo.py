@@ -34,6 +34,7 @@ def demo_translation():
 
     p = 50
     sigma = 0.3
+    rng = np.random.default_rng(0)
     shifts = np.arange(-5, 6)
 
     model = Translation1D(
@@ -58,7 +59,7 @@ def demo_translation():
     plot_samples_1d(Y)
 
     # initialisation EM
-    theta_init = np.random.randn(p)
+    theta_init = rng.standard_normal(p)
 
     # EM
     theta_est, history, Q_history = em(
@@ -170,6 +171,7 @@ def demo_rotation():
     p = 40
 
     sigma = 0.04
+    rng = np.random.default_rng(1)
 
     angles = np.linspace(
         0,
@@ -221,7 +223,7 @@ def demo_rotation():
     # Initialisation
     # ========================================================
 
-    theta_init = np.random.randn(p, p)
+    theta_init = rng.standard_normal((p, p))
 
     theta_init = model.enforce_constraints(theta_init)
 

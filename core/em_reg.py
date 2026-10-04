@@ -8,101 +8,40 @@ def em_regularized(
     theta_init=None,
     n_iter=50,
     optimizer=None,
-    verbose=True
+    verbose=True,
 ):
-
-    # =========================
-    # Initialisation
-    # =========================
-
-    if theta_init is None:
-
-        theta = np.mean(Y, axis=0)
-
-    else:
-
-        theta = theta_init.copy()
+    if lambda_reg < 0 or not np.isfinite(lambda_reg):
+        raise ValueError("lambda_reg must be finite and non-negative")
+    if n_iter < 0:
+        raise ValueError("n_iter must be non-negative")
+    theta = (
+        model.initialize_theta(Y)
+        if theta_init is None
+        else np.asarray(theta_init).copy()
+    )
 
     history = [theta.copy()]
-
     Q_history = []
 
-    # =========================
-    # Boucle EM
-    # =========================
-
-    for k in range(n_iter):
-
-        # =====================
-        # E-step
-        # =====================
-
-        weights = model.compute_weights(
-            Y,
-            theta
+    for iteration in range(n_iter):
+        weights = model.compute_weights(Y, theta)
+        Q_fn = lambda candidate: (
+            model.Q(Y, candidate, weights)
+            - 0.5 * lambda_reg * np.sum(candidate**2)
         )
-
-        # =====================
-        # Monitoring
-        # =====================
-
-        Q_val = model.Q(
-            Y,
-            theta
-        )
-
+        Q_val = Q_fn(theta)
         Q_history.append(Q_val)
 
-        # =====================
-        # M-step
-        # =====================
-
-        # ----- EM explicite -----
-
         if optimizer is None:
-
-            theta = model.solve_m_step(
-
-                Y,
-                weights,
-                lambda_reg=lambda_reg
-
-            )
-
-        # ----- GEM régularisé -----
-
+            theta = model.solve_m_step(Y, weights, lambda_reg=lambda_reg)
         else:
-
-            Q_fn = lambda th: (
-                model.Q(Y, th)
+            grad_fn = lambda candidate: (
+                model.gradient_Q(Y, candidate, weights) - lambda_reg * candidate
             )
-
-            grad_fn = lambda th: (
-
-                model.gradient_Q(Y, th)
-                - lambda_reg * th
-
-            )
-
-            theta = optimizer.step(
-
-                theta,
-                Q_fn,
-                grad_fn
-
-            )
+            theta = optimizer.step(theta, Q_fn, grad_fn)
 
         history.append(theta.copy())
-
-        # =====================
-        # Affichage
-        # =====================
-
-        if verbose and k % 10 == 0:
-
-            print(
-                f"Iteration {k} | "
-                f"Q = {Q_val:.4f}"
-            )
+        if verbose and iteration % 10 == 0:
+            print(f"Iteration {iteration} | Q = {Q_val:.4f}")
 
     return theta, history, Q_history

@@ -1,51 +1,43 @@
-# Hidden Variable Inverse Problems
+# Hidden-Variable Inverse Problems
 
-Research project carried out with Arthur Conche at Université Paris Cité, motivated by applications in cryo-electron microscopy (Cryo-EM).
+An EM implementation for inverse problems with discrete latent transformations,
+developed by Niokhobaye Abdel and Arthur Conche at Universite Paris Cite.
 
-This project studies statistical estimation in inverse problems with latent variables. We investigate maximum likelihood estimation, gradient-based optimization, the Expectation-Maximization (EM) algorithm, regularization techniques, and applications to signal reconstruction from noisy transformed observations.
+## Model
 
-## Mathematical Report
+For observations $Y_i = A_{Z_i}\theta + \varepsilon_i$, the code estimates
+the shared signal $\theta$ while treating each transformation $Z_i$ as latent.
+The E-step computes posterior weights; the M-step either solves weighted normal
+equations or takes an Armijo-checked gradient step.
 
-The complete theoretical study is available in:
+Implemented examples:
 
-- report/doc-2-1.pdf
+- Circular translations of one-dimensional signals.
+- Two-dimensional rotations followed by numerical projection.
+- Optional quadratic regularization.
 
-Topics include:
+The 2D model uses the transpose of its discrete bilinear interpolation and
+projection operators, so its adjoint can be checked by an inner-product test.
 
-- Maximum Likelihood Estimation
-- Expectation-Maximization (EM)
-- Hidden Variables
-- Inverse Problems
-- Statistical Error Analysis
-- Tikhonov Regularization
-- Cryo-EM Motivation
+## Setup
 
-## Software Design
+Python 3.11 or 3.12 is supported.
 
-A modular Python implementation is currently under development.
+```bash
+python -m pip install -e ".[test]"
+MPLBACKEND=Agg python -m pytest -q
+```
 
-Planned components:
+Run `python demo.py` for the interactive examples. The data generator and demo
+initializations use local seeded random generators and do not reset NumPy's
+global random state.
 
-- Generic latent-variable inverse problem framework
-- 1D translation model
-- 2D rotation-projection model
-- EM and GEM algorithms
-- Numerical experiments
+## Report
 
-## Repository Structure
-core/       # EM and optimization algorithms
-models/     # Translation and rotation-projection models
-utils/      # Metrics and utilities
-figures/    # Experimental results
-rapport/    # Report and presentation slides
-## Future Work
-  - Convergence analysis
-  - Continuous latent-variable models
-  - Advanced regularization techniques
-  - Large-scale Cryo-EM applications
+The mathematical report and slides are in [`rapport/`](rapport/), including
+[`doc-2-1.pdf`](rapport/doc-2-1.pdf).
 
 ## Acknowledgements
 
-## Acknowledgements
-
-This project was carried out jointly with Arthur Conche as part of a Master's research project. Part of the software implementation was developed in collaboration with him.
+This project was carried out jointly with Arthur Conche. The software was
+developed in collaboration with him.

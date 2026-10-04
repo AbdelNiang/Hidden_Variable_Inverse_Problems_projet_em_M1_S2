@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hidden-variable-inverse-problems"
+version = "0.1.0"
+description = "EM for inverse problems with discrete latent transformations"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "numpy>=1.26,<3",
+    "matplotlib>=3.6,<4",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7.4,<9"]
+
+[tool.setuptools]
+py-modules = ["demo"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core", "core.*", "models", "models.*", "utils", "utils.*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
